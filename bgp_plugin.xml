@@ -1,0 +1,7 @@
+<library path="lib/libvoronoi_planner">
+  <class name="voronoi_planner/VoronoiPlanner" type="voronoi_planner::VoronoiPlanner" base_class_type="nav_core::BaseGlobalPlanner">
+    <description>
+      A implementation of a grid based planner using voronoi diagram
+    </description>
+  </class>
+</library>
