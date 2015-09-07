@@ -53,13 +53,13 @@ target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
 add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_gencfg)
 
-add_executable(planner
-  src/example.cpp
-)
-target_link_libraries(planner
-  ${PROJECT_NAME}
-  ${catkin_LIBRARIES}
-)
+#add_executable(planner
+#  src/example.cpp
+#)
+#target_link_libraries(planner
+#  ${PROJECT_NAME}
+#  ${catkin_LIBRARIES}
+#)
 
 install(TARGETS ${PROJECT_NAME} planner
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
