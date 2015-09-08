@@ -14,11 +14,11 @@ find_package(catkin REQUIRED
     pluginlib
     roscpp
     tf
-    dynamic_voronoi
+    dynamicvoronoi
 )
 
 generate_dynamic_reconfigure_options(
-  cfg/GlobalPlanner.cfg
+  cfg/VoronoiPlanner.cfg
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -L libdynamic_voronoi")
@@ -38,7 +38,7 @@ catkin_package(
     pluginlib
     roscpp
     tf
-    dynamic_voronoi
+    dynamicvoronoi
 )
 
 include_directories(
@@ -61,7 +61,7 @@ add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_gencfg)
 #  ${catkin_LIBRARIES}
 #)
 
-install(TARGETS ${PROJECT_NAME} planner
+install(TARGETS ${PROJECT_NAME} #planner
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})

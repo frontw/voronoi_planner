@@ -73,11 +73,14 @@ void VoronoiPlanner::outlineMap(unsigned char* costarr, int nx, int ny, unsigned
 }
 
 VoronoiPlanner::VoronoiPlanner() :
-        costmap_(NULL), initialized_(false), publish_voronoi_grid_(true) {
+        costmap_(NULL), initialized_(false), publish_voronoi_grid_(true),
+        smooth_path_ (true), weight_data_ (0.5), weight_smooth_ (0.3) {
 }
 
 VoronoiPlanner::VoronoiPlanner(std::string name, costmap_2d::Costmap2D* costmap, std::string frame_id) :
-        costmap_(NULL), initialized_(false), publish_voronoi_grid_(true) {
+        costmap_(NULL), initialized_(false), publish_voronoi_grid_(true),
+        smooth_path_ (true), weight_data_ (0.5), weight_smooth_ (0.3)
+{
     //initialize the planner
     initialize(name, costmap, frame_id);
 }
@@ -109,10 +112,10 @@ void VoronoiPlanner::initialize(std::string name, costmap_2d::Costmap2D* costmap
 
         make_plan_srv_ = private_nh.advertiseService("make_plan", &VoronoiPlanner::makePlanService, this);
 
-//        dsrv_ = new dynamic_reconfigure::Server<global_planner::VoronoiPlannerConfig>(ros::NodeHandle("~/" + name));
-//        dynamic_reconfigure::Server<global_planner::VoronoiPlannerConfig>::CallbackType cb = boost::bind(
-//                &VoronoiPlanner::reconfigureCB, this, _1, _2);
-//        dsrv_->setCallback(cb);
+        dsrv_ = new dynamic_reconfigure::Server<voronoi_planner::VoronoiPlannerConfig>(ros::NodeHandle("~/" + name));
+        dynamic_reconfigure::Server<voronoi_planner::VoronoiPlannerConfig>::CallbackType cb = boost::bind(
+                &VoronoiPlanner::reconfigureCB, this, _1, _2);
+        dsrv_->setCallback(cb);
 
         initialized_ = true;
     } else
@@ -120,14 +123,13 @@ void VoronoiPlanner::initialize(std::string name, costmap_2d::Costmap2D* costmap
 
 }
 
-//void VoronoiPlanner::reconfigureCB(global_planner::VoronoiPlannerConfig& config, uint32_t level) {
-//    planner_->setLethalCost(config.lethal_cost);
-//    path_maker_->setLethalCost(config.lethal_cost);
-//    planner_->setNeutralCost(config.neutral_cost);
-//    planner_->setFactor(config.cost_factor);
-//    publish_potential_ = config.publish_potential;
-//    orientation_filter_->setMode(config.orientation_mode);
-//}
+void VoronoiPlanner::reconfigureCB(voronoi_planner::VoronoiPlannerConfig& config, uint32_t level) {
+    weight_data_ = config.weight_data;
+    weight_smooth_ = config.weight_smooth;
+
+    publish_voronoi_grid_ = config.publish_voronoi_grid;
+    smooth_path_ = config.smooth_path;
+}
 
 void VoronoiPlanner::clearRobotCell(const tf::Stamped<tf::Pose>& global_pose, unsigned int mx, unsigned int my) {
     if (!initialized_) {
@@ -303,7 +305,7 @@ bool VoronoiPlanner::makePlan(const geometry_msgs::PoseStamped& start, const geo
 
 
     ROS_INFO("voronoi.visualize");
-    voronoi.visualize("/home/op/vessel/initial.ppm");
+    voronoi.visualize("initial.ppm");
     ROS_INFO("Time (for visualize): %f sec", (ros::Time::now() - t).toSec());
 
 
@@ -384,7 +386,9 @@ bool VoronoiPlanner::makePlan(const geometry_msgs::PoseStamped& start, const geo
             map[x][y] = 1;
     }
 
-    smoothPath(&path1);
+    if(smooth_path_){
+        smoothPath(&path1);
+    }
 
     visualize("/home/op/vessel/plan.ppm", &voronoi, map, &path1);
 
@@ -608,9 +612,7 @@ bool VoronoiPlanner::findPath(std::vector<std::pair<float, float> > *path,
 
 
 
-void VoronoiPlanner::smoothPath(std::vector<std::pair<float, float> > *path,
-                float weight_data,
-                float weight_smooth)
+void VoronoiPlanner::smoothPath(std::vector<std::pair<float, float> > *path)
 {
     // Make a deep copy of path into newpath
     std::vector<std::pair<float, float> > newpath = *path;
@@ -631,13 +633,13 @@ void VoronoiPlanner::smoothPath(std::vector<std::pair<float, float> > *path,
             float aux_y = newpath[i].second;
 
 
-            float newpath_x = newpath[i].first + weight_data * ( path->at(i).first - newpath[i].first);
-            float newpath_y = newpath[i].second + weight_data * ( path->at(i).second - newpath[i].second);
+            float newpath_x = newpath[i].first + weight_data_ * ( path->at(i).first - newpath[i].first);
+            float newpath_y = newpath[i].second + weight_data_ * ( path->at(i).second - newpath[i].second);
 
 
-            newpath_x = newpath_x + weight_smooth *
+            newpath_x = newpath_x + weight_smooth_ *
                     (newpath[i-1].first + newpath[i+1].first - (2.0 * newpath_x));
-            newpath_y = newpath_y + weight_smooth *
+            newpath_y = newpath_y + weight_smooth_ *
                     (newpath[i-1].second + newpath[i+1].second - (2.0 * newpath_y));
 
             change = change + fabs(aux_x - newpath_x);

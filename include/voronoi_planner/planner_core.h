@@ -19,6 +19,8 @@
 #include <vector>
 #include "dynamicvoronoi.h"
 
+#include <voronoi_planner/VoronoiPlannerConfig.h>
+
 namespace voronoi_planner {
 
 /**
@@ -83,9 +85,7 @@ class VoronoiPlanner : public nav_core::BaseGlobalPlanner {
                       bool check_is_voronoi_cell,
                       bool stop_at_voronoi );
 
-        void smoothPath(std::vector<std::pair<float, float> > *path,
-                        float weight_data = 0.5,
-                        float weight_smooth = 0.3);
+        void smoothPath(std::vector<std::pair<float, float> > *path);
 
 
         /**
@@ -110,6 +110,11 @@ class VoronoiPlanner : public nav_core::BaseGlobalPlanner {
         bool publish_voronoi_grid_;
         ros::Publisher voronoi_grid_pub_;
 
+        bool smooth_path_;
+        float weight_data_;
+        float weight_smooth_;
+
+
 
     private:
         void mapToWorld(double mx, double my, double& wx, double& wy);
@@ -127,8 +132,8 @@ class VoronoiPlanner : public nav_core::BaseGlobalPlanner {
         unsigned int start_x_, start_y_, end_x_, end_y_;
 
 
-//        dynamic_reconfigure::Server<voronoi_planner::VoronoiPlannerConfig> *dsrv_;
-//        void reconfigureCB(voronoi_planner::VoronoiPlannerConfig &config, uint32_t level);
+        dynamic_reconfigure::Server<voronoi_planner::VoronoiPlannerConfig> *dsrv_;
+        void reconfigureCB(voronoi_planner::VoronoiPlannerConfig &config, uint32_t level);
 
 };
 
