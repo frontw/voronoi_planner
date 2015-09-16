@@ -126,6 +126,7 @@ class VoronoiPlanner : public nav_core::BaseGlobalPlanner {
         boost::mutex mutex_;
         ros::ServiceServer make_plan_srv_;
 
+        DynamicVoronoi voronoi_;
 
         void outlineMap(unsigned char* costarr, int nx, int ny, unsigned char value);
         unsigned char* cost_array_;
@@ -134,6 +135,7 @@ class VoronoiPlanner : public nav_core::BaseGlobalPlanner {
 
         dynamic_reconfigure::Server<voronoi_planner::VoronoiPlannerConfig> *dsrv_;
         void reconfigureCB(voronoi_planner::VoronoiPlannerConfig &config, uint32_t level);
+        void costmapUpdateCallback(const map_msgs::OccupancyGridUpdate::ConstPtr& msg);
 
 };
 

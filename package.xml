@@ -2,7 +2,7 @@
   <name>voronoi_planner</name>
   <version>0.1.0</version>
   <description>
-     A path planner library and node.
+     A path planner library, that searches a path from robot position to given goal on generalized Voronoi diagram (GVD) which is made up of regions around obstacles on costmap.
   </description>
   <maintainer email="frontwise@gmail.com">Roman Fedorenko</maintainer>
 /maintainer>
