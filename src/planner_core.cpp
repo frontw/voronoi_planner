@@ -265,7 +265,7 @@ bool VoronoiPlanner::makePlan(const geometry_msgs::PoseStamped& start, const geo
 
     map = new bool*[sizeX];
 
-    ROS_INFO("Map size is %d %d", sizeX, sizeY);
+//    ROS_INFO("Map size is %d %d", sizeX, sizeY);
 
     ros::Time t = ros::Time::now();
     ros::Time t_b = ros::Time::now();
@@ -315,9 +315,9 @@ bool VoronoiPlanner::makePlan(const geometry_msgs::PoseStamped& start, const geo
 
 
 
-    ROS_INFO("voronoi.visualize");
-    voronoi_.visualize("/tmp/initial.ppm");
-    ROS_INFO("Time (for visualize): %f sec", (ros::Time::now() - t).toSec());
+//    ROS_INFO("voronoi.visualize");
+//    voronoi_.visualize("/tmp/initial.ppm");
+//    ROS_INFO("Time (for visualize): %f sec", (ros::Time::now() - t).toSec());
 
 
     std::cerr << "Generated initial frame.\n";
@@ -376,8 +376,8 @@ bool VoronoiPlanner::makePlan(const geometry_msgs::PoseStamped& start, const geo
     {
         ROS_INFO("Failed to find full path");
     }
-    else
-    {
+//    else
+//    {
 
 //    path = [path1;path2;path3];
     path1.insert( path1.end(), path2.begin(), path2.end() );
@@ -397,11 +397,11 @@ bool VoronoiPlanner::makePlan(const geometry_msgs::PoseStamped& start, const geo
             map[x][y] = 1;
     }
 
-    if(smooth_path_){
-        smoothPath(&path1);
-    }
+//    if(smooth_path_){
+//        smoothPath(&path1);
+//    }
 
-    visualize("/tmp/plan.ppm", &voronoi_, map, &path1);
+//    visualize("/tmp/plan.ppm", &voronoi_, map, &path1);
 
 
     for(int i = 0; i < path1.size(); i++)
@@ -431,7 +431,7 @@ bool VoronoiPlanner::makePlan(const geometry_msgs::PoseStamped& start, const geo
     // add orientations if needed
 //    orientation_filter_->processPath(start, plan);
 
-    }
+//    }
 
     ROS_ERROR("\nTime to get plan: %f sec\n", (ros::Time::now() - t_b).toSec());
 
@@ -454,6 +454,8 @@ bool VoronoiPlanner::findPath(std::vector<std::pair<float, float> > *path,
               bool check_is_voronoi_cell,
               bool stop_at_voronoi )
 {
+//    ROS_INFO("init_x %d, init_y %d, goal_x %d, goal_y %d, check_is_voronoi_cell %d, stop_at_voronoi %d", init_x, init_y, goal_x, goal_y, check_is_voronoi_cell, stop_at_voronoi);
+//    ROS_INFO("isVoronoi(init) %d; isVoronoi(goal) %d", voronoi->isVoronoi(init_x, init_y), voronoi->isVoronoi(goal_x, goal_y) );
     // available movements (actions) of the robot on the grid
     std::vector<std::pair<int, int> > delta;
     delta.push_back( {-1, 0} );     // go up
@@ -556,7 +558,7 @@ bool VoronoiPlanner::findPath(std::vector<std::pair<float, float> > *path,
             }
             else
             {
-                if (x == goal_x && y == goal_y)
+                if ( x == goal_x && y == goal_y )
                 {
                     found = true;
                     continue;
@@ -568,15 +570,14 @@ bool VoronoiPlanner::findPath(std::vector<std::pair<float, float> > *path,
                 int x2 = x + std::get<0>(delta[i]);
                 int y2 = y + std::get<1>(delta[i]);
 
-                // check new node not to be in obstacle
-                if(voronoi->isOccupied(x2,y2))
-                {
-                    continue;
-                }
-
                 // check new node to be in grid bounds
                 if ( x2 >= 0 && x2 < sizeX && y2 >= 0 && y2 < sizeY )
                 {
+                    // check new node not to be in obstacle
+                    if(voronoi->isOccupied(x2,y2))
+                    {
+                        continue;
+                    }
                     // check new node was not early visited
                     if ( closed[x2][y2] ){
                         continue;
@@ -611,6 +612,7 @@ bool VoronoiPlanner::findPath(std::vector<std::pair<float, float> > *path,
 
         int x2 = x - std::get<0>( delta[ action[x][y] ] );
         int y2 = y - std::get<1>( delta[ action[x][y] ] );
+
 
         x = x2;
         y = y2;
@@ -676,7 +678,7 @@ void VoronoiPlanner::publishPlan(const std::vector<geometry_msgs::PoseStamped>& 
 
     if (!path.empty()) {
         gui_path.header.frame_id = path[0].header.frame_id;
-        gui_path.header.stamp = path[0].header.stamp;
+        gui_path.header.stamp = ros::Time::now();
     }
 
     // Extract the plan in world co-ordinates, we assume the path is all in the same frame
