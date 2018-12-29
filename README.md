@@ -6,7 +6,7 @@ Article: https://www.matec-conferences.org/articles/matecconf/pdf/2016/05/matecc
 ```
 @inproceedings{Fedorenkoa2016LocalAG,
   title={Local and Global Motion Planning for Unmanned Surface Vehicle},
-  author={Roman Fedorenkoa},
+  author={Roman Fedorenko},
   year={2016}
 }
 ```
