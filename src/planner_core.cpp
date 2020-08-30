@@ -444,6 +444,12 @@ bool VoronoiPlanner::makePlan(const geometry_msgs::PoseStamped& start, const geo
     }
 
 //    delete potential_array_;
+
+    for (int x = 0; x < sizeX; x++) {
+        delete[] map[x];
+    }
+    delete[] map;
+
     return !plan.empty();
 }
 
@@ -619,6 +625,17 @@ bool VoronoiPlanner::findPath(std::vector<std::pair<float, float> > *path,
     }
 
     reverse(path->begin(), path->end());
+
+    for (int x = 0; x < sizeX; x++) {
+        delete[] closed[x];
+    }
+    delete[] closed;
+
+    for (int x = 0; x < sizeX; x++) {
+        delete[] action[x];
+    }
+    delete[] action;
+
     return true;
 }
 
