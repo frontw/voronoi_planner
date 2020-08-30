@@ -1,5 +1,7 @@
 # voronoi_planner
 
+Description: http://wiki.ros.org/voronoi_planner
+
 ## Cite
 
 Article: https://www.matec-conferences.org/articles/matecconf/pdf/2016/05/matecconf_iccma2016_01005.pdf
